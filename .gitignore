@@ -1,0 +1,27 @@
+# Notebook / Python
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Datasets are downloaded at runtime via kagglehub
+yolo_dataset/
+yolo_dataset_rtdetr/
+datasets/
+
+# Training artefacts and model weights (too large for version control)
+runs/
+saved_models/
+*.pt
+*.pth
+
+# Generated results
+comparison_results/
+hybrid_results/
+rtdetr_results/
+attention_results/
+*.zip
+
+# OS
+.DS_Store
