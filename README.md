@@ -11,6 +11,16 @@ deduplicated multi-source dataset, under a single evaluation protocol.
 | `pothole_hybrid.ipynb` | YOLOv8m+CBAM, YOLOv8m+CoordAttn, YOLO+Faster R-CNN ensemble (WBF) |
 | `rtdetr.ipynb` | RT-DETR |
 
+## Setup
+
+```bash
+pip install ultralytics torch torchvision kagglehub opencv-python \
+            pandas numpy matplotlib seaborn tqdm pyyaml
+```
+
+Trained on a single NVIDIA GeForce RTX 3090 (24 GB). CPU inference works but
+the throughput figures above will not reproduce.
+
 ## Licence
 
 Released for academic use. The source datasets retain their original
