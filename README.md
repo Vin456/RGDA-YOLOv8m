@@ -73,6 +73,45 @@ pip install ultralytics torch torchvision kagglehub opencv-python \
 Trained on a single NVIDIA GeForce RTX 3090 (24 GB). CPU inference works but
 the throughput figures above will not reproduce.
 
+## Reproducing
+
+Run the notebooks in this order -- the baseline notebook writes the weights
+that the hybrid notebook's ensemble depends on:
+
+1. `pothole_base_model.ipynb`
+2. `pothole_hybrid.ipynb`
+3. `rtdetr.ipynb`
+
+Each notebook is self-contained: it downloads the three source datasets,
+deduplicates them, builds the same seed-42 split and trains from
+COCO-pretrained weights. Set `SKIP_TRAINING = True` to reuse saved weights.
+
+**Run every notebook top to bottom from a fresh kernel.** The throughput
+benchmark writes its measurements back into the in-memory result
+dictionaries, so the results table and export cells must run after it. A
+partial or out-of-order run will export the in-loop timings rather than the
+dedicated-pass figures reported above.
+
+## Evaluation protocol
+
+All configurations are scored through one evaluator so the comparison
+measures detectors rather than evaluation code.
+
+- **AP** -- COCO-style 101-point interpolation at IoU 0.5. Scoring identical
+  predictions under the PASCAL VOC 2007 11-point rule shifts mAP@0.5 by 2.7
+  percentage points, more than the differences between several of the
+  configurations above, so the two are never mixed.
+- **Matching** -- greedy and score-ordered, one detection per ground-truth
+  box. A detection whose best match is already claimed falls through to the
+  best still-unmatched box rather than being counted a false positive
+  outright, which is the COCO and VOC behaviour.
+- **Operating points** -- P/R/F1 at a fixed confidence of 0.25, and again at
+  the confidence maximising F1. A single fixed threshold is not neutral
+  across detector families.
+- **Throughput** -- images divided by total wall-clock over a dedicated pass,
+  with images pre-decoded, a warm-up discarded and the device synchronised.
+  Not the mean of per-image reciprocals, which is biased upward.
+
 ## Licence
 
 Released for academic use. The source datasets retain their original
