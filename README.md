@@ -3,6 +3,65 @@
 Fine-tuning and evaluation of object detectors for pothole detection on a
 deduplicated multi-source dataset, under a single evaluation protocol.
 
+## Running the code
+
+Every notebook is self-contained: it downloads the data, deduplicates it,
+builds the same seed-42 split and trains from COCO-pretrained weights. Nothing
+needs to be prepared by hand.
+
+**1. Get the code.**
+
+```bash
+git clone https://github.com/Vin456/RGDA-YOLOv8m.git
+cd RGDA-YOLOv8m
+```
+
+**2. Install the dependencies.** Python 3.10 or later, with a CUDA-capable
+PyTorch build if you want the throughput figures to mean anything.
+
+```bash
+pip install ultralytics torch torchvision kagglehub opencv-python \
+            pandas numpy matplotlib seaborn tqdm pyyaml
+```
+
+**3. Authenticate with Kaggle.** The three source datasets are pulled at
+runtime through `kagglehub`, which needs an API token. Create one at
+*kaggle.com -> Settings -> API -> Create New Token* and place the downloaded
+`kaggle.json` at `~/.kaggle/kaggle.json` (`%USERPROFILE%\.kaggle\kaggle.json`
+on Windows), then restrict its permissions:
+
+```bash
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+On Kaggle or Colab this step is unnecessary; the first cell detects the
+environment and sets its own paths.
+
+**4. Run a notebook top to bottom from a fresh kernel.**
+
+```bash
+jupyter lab YOLOv8_CBAM_ECA.ipynb
+```
+
+Order matters only if you want the ensemble: `pothole_hybrid.ipynb` reuses
+weights written by `pothole_base_model.ipynb`. Otherwise each notebook stands
+alone. The full order is given under [Reproducing](#reproducing).
+
+**Do not run cells out of order.** The throughput benchmark writes its
+measurements back into the in-memory result dictionaries, so the results table
+and export cells must run after it; a partial run exports the in-loop timings
+instead of the dedicated-pass figures.
+
+Outputs land in `attention_results/` and checkpoints in `saved_models/`, both
+created on first run. Set `SKIP_TRAINING = True` to score existing weights
+without retraining.
+
+**Expect it to take a while.** Each configuration is 50 epochs over 740 images,
+and the multi-seed and ablation notebooks train several of them in sequence:
+on an RTX 3090, `YOLOv8_CBAM_ECA.ipynb` runs about six hours end to end, since
+it covers three seeds of the proposed model plus four ablation cells at three
+seeds each.
+
 ## Notebooks
 
 | Notebook | Configurations |
