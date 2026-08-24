@@ -10,7 +10,8 @@ deduplicated multi-source dataset, under a single evaluation protocol.
 | `pothole_base_model.ipynb` | YOLOv8m, YOLOv10m, YOLOv11m, Faster R-CNN, SSD-VGG16 |
 | `pothole_hybrid.ipynb` | YOLOv8m+CBAM, YOLOv8m+CoordAttn, YOLO+Faster R-CNN ensemble (WBF) |
 | `rtdetr.ipynb` | RT-DETR |
-| `YOLOv8_CBAM_ECA.ipynb` | **RGDA-YOLOv8m** (proposed), the 2x2 ECA/CBAM ablation, and the same block on YOLOv11m |
+| `YOLOv8_CBAM_ECA.ipynb` | **RGDA-YOLOv8m** (proposed) and the 2x2 ECA/CBAM ablation |
+| `yolov11m_CBAM_ECA.ipynb` | The identical block on a YOLOv11m host (architecture-dependence test) |
 
 ## Dataset
 
@@ -143,9 +144,14 @@ not channel attention versus spatial attention.
 
 ### The same block on YOLOv11m
 
+`yolov11m_CBAM_ECA.ipynb` repeats the experiment with the host swapped.
 YOLOv11m places a C2PSA partial-self-attention module after the backbone's SPPF
 stage, so features reach its neck already reweighted once. The injector selects
-neck blocks positionally by class name, so it moved between hosts unchanged.
+neck blocks positionally by class name across
+`{C3k2, C2f, C2fAttn, RepC3, C3}`, so it moved between hosts without
+modification -- which is what makes the comparison controlled. The notebook also
+prints the learned gate values per seed, confirming the residual gate opens
+rather than collapsing to zero.
 
 | Host | No attention | + ECA+CBAM | Effect |
 |---|---|---|---|
@@ -186,6 +192,7 @@ that the hybrid notebook's ensemble depends on:
 2. `pothole_hybrid.ipynb`
 3. `rtdetr.ipynb`
 4. `YOLOv8_CBAM_ECA.ipynb`
+5. `yolov11m_CBAM_ECA.ipynb`
 
 Each notebook is self-contained: it downloads the three source datasets,
 deduplicates them, builds the same seed-42 split and trains from
